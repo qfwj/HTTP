@@ -35,16 +35,39 @@ public class HttpTestController {
         HttpClient client = new DefaultHttpClient();
 
         /*HttpHead httpHead = new HttpHead("http://localhost:8080/mytest1.txt");*/
-        HttpGet httpget = new HttpGet("http://localhost:8080/mytest1.txt");
-        httpget.setHeader("range","bytes=200000000-200001000");
+        HttpGet httpget = new HttpGet("http://localhost:8080/ewewew.iso");
+
         HttpResponse response;
         FileOutputStream fo = null;
         try {
-            response = client.execute(httpget);
+
+
+            response = client.execute(httpget);//此时已经可以获取文件总长度；因此可以关闭此次连接；
+            // 根据总长进行多线程的分段请求
+            /*关闭连接
+            client = new DefaultHttpClient();
+            httpget.setHeader("range","bytes=200000000-200001000");
+            response = client.execute(httpget);*/
+
+            for(10){
+                new Thread(){
+                    run(){
+                        client = new DefaultHttpClient();
+                        httpget.setHeader("range","bytes=200000000-200001000");
+                        response = client.execute(httpget);*/
+                        HttpEntity sd = response.getEntity();
+                        File  sffr  = new File("wewe.txt");//写进同一个文件
+                        fo = new FileOutputStream(sffr);
+                        sd.writeTo(fo); //开启i/o流
+                    }
+                };
+            }
+
+
             HttpEntity sd = response.getEntity();
             File  sffr  = new File("wewe.txt");
             fo = new FileOutputStream(sffr);
-            sd.writeTo(fo);
+            sd.writeTo(fo); //开启i/o流
             Header[] ss = response.getAllHeaders();
         } catch ( Exception e){
             e.printStackTrace();
